@@ -1569,8 +1569,6 @@
                 if (!modal.classList.contains('show')) modal.style.display = 'none';
             }, 400);
         }
-
-
         function whoGoesFirst() {
             closeModal('menu-modal');
             document.body.style.pointerEvents = "none";
@@ -1613,6 +1611,8 @@
 
             resetMana(winner);
             resetMana(loser);
+            resetHP();
+
             let winnerNodes = document.querySelectorAll(`#p${winner}-mana-track .mana-node`);
             for (let i = 1; i < winnerNodes.length; i++) {
                 winnerNodes[i].classList.add('used');
@@ -1670,21 +1670,25 @@
                 }, 1000);
             }
         }
-
-        function restartGame() {
+        function resetHP() {
             [1, 2].forEach(p => {
                 state[p].life = 30;
                 state[p].maxHp = 30;
+                document.getElementById(`p${p}-life`).innerText = 30;
+                document.getElementById(`p${p}-max-hp`).innerText = 30;
+            });
+        }
+        function restartGame() {
+            [1, 2].forEach(p => {
                 state[p].plus = 0;
                 state[p].minus = 0;
                 state[p].maxMana = 3;
-                document.getElementById(`p${p}-life`).innerText = 30;
-                document.getElementById(`p${p}-max-hp`).innerText = 30;
                 document.getElementById(`p${p}-stack-plus`).style.opacity = '0';
                 document.getElementById(`p${p}-stack-minus`).style.opacity = '0';
                 renderMana(p);
                 syncLowHpState(p);
             });
+            resetHP();
             closeModal('menu-modal');
         }
 
