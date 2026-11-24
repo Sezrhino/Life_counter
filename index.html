@@ -22,8 +22,8 @@
         rel="stylesheet">
     <style>
         :root {
-            --p1-bg: #F5A623;
-            --p2-bg: #222222;
+            --p1-bg: #ff0505;
+            --p2-bg: #2894dd;
             --text-color: #ffffff;
             --mana-active: #ffffff;
             --mana-inactive: rgba(255, 255, 255, 0.15);
@@ -68,13 +68,13 @@
         }
 
         .p2-zone {
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0.15) 100%), var(--p2-bg);
+            background: var(--p2-bg);
             transform: rotate(180deg);
             border-bottom: 2px solid rgba(255, 255, 255, 0.2);
         }
 
         .p1-zone {
-            background: linear-gradient(0deg, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0.15) 100%), var(--p1-bg);
+            background: var(--p1-bg);
         }
 
         @keyframes zone-pulse-damage {
@@ -886,7 +886,7 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
+            gap: 60px;
             margin: 20px 0 30px 0;
             min-height: 120px;
             perspective: 1000px;
@@ -918,7 +918,7 @@
             justify-content: center;
             font-weight: 900;
             font-size: 14px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
+            border: 8px solid rgb(255, 255, 255);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
             font-family: 'Outfit';
             letter-spacing: 1px;
@@ -954,7 +954,7 @@
 
         .color-row {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             margin-bottom: 20px;
             justify-content: center;
             flex-wrap: wrap;
@@ -964,7 +964,7 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(241, 241, 241, 0.712);
             cursor: pointer;
             transition: 0.2s;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
@@ -972,23 +972,6 @@
 
         .color-dot:active {
             transform: scale(0.8);
-        }
-
-        @keyframes flash-win {
-
-            0%,
-            100% {
-                filter: brightness(1);
-            }
-
-            50% {
-                filter: brightness(1.5);
-                background-color: rgba(255, 255, 255, 0.3);
-            }
-        }
-
-        .flash-winner {
-            animation: flash-win 0.8s ease-out;
         }
 
         @keyframes lp-low-blink {
@@ -1104,7 +1087,7 @@
     <div class="modal" id="menu-modal">
         <div class="modal-content">
             <h2>MENU</h2>
-            <button class="menu-btn highlight" onclick="whoGoesFirst()"> 🎲 สุ่มผู้เล่นคนแรก </button>
+            <button class="menu-btn highlight" onclick="whoGoesFirst()"> 🎲 สุ่มผู้เล่นคนแรก & เริ่มเกมใหม่ </button>
             <button class="menu-btn highlight" onclick="openModal('coin-modal')"
                 style="background: linear-gradient(135deg, #f97316, #ea580c); color:white;"> 🪙 ทอยเหรียญ (Flip Coin)
             </button>
@@ -1112,7 +1095,6 @@
                 style="background: linear-gradient(135deg, #0284c7, #0369a1); border:none; font-weight:600;"> ⏱️
                 ตั้งเวลานับถอยหลัง (Timer)
             </button>
-            <button class="menu-btn" onclick="toggleFullScreen()"> 🔲 เปิด/ปิดโหมดเต็มจอ </button>
             <button class="menu-btn" onclick="openModal('color-modal')"> 🎨 เปลี่ยนสีเพลย์แมต </button>
             <button class="menu-btn" onclick="restartGame()" style="color: #fca5a5;"> 🔄 เริ่มเกมใหม่ทั้งหมด </button>
             <button class="close" onclick="closeModal('menu-modal')">Close Menu</button>
@@ -1186,8 +1168,8 @@
 
             <div id="coin-arena" class="coin-arena"></div>
 
-            <button class="menu-btn highlight" onclick="startCoinFlip()" id="flip-btn"> FLIP COIN </button>
-            <button class="close" onclick="closeModal('coin-modal'); openModal('menu-modal');">Back</button>
+            <button class="menu-btn highlight" onclick="startCoinFlip()" id="flip-btn"> ทอยเหรียญ </button>
+            <button class="close" onclick="closeModal('coin-modal'); openModal('menu-modal');">ย้อนกลับ</button>
         </div>
     </div>
 
@@ -1197,19 +1179,21 @@
             <h2>THEME COLORS</h2>
             <p style="color:rgba(255,255,255,0.7); font-size:13px; margin-bottom:10px;">Player 2 (ฝั่งบน)</p>
             <div class="color-row">
-                <div class="color-dot" style="background:#4A90E2;" onclick="setPlayerColor(2, '#4A90E2')"></div>
-                <div class="color-dot" style="background:#50E3C2;" onclick="setPlayerColor(2, '#50E3C2')"></div>
-                <div class="color-dot" style="background:#FF647C;" onclick="setPlayerColor(2, '#FF647C')"></div>
-                <div class="color-dot" style="background:#F5A623;" onclick="setPlayerColor(2, '#F5A623')"></div>
+                <div class="color-dot" style="background:#ff0505;" onclick="setPlayerColor(2, '#ff0505')"></div>
+                <div class="color-dot" style="background:#ffe205;" onclick="setPlayerColor(2, '#ffe205')"></div>
+                <div class="color-dot" style="background:#2b9202;" onclick="setPlayerColor(2, '#2b9202')"></div>
+                <div class="color-dot" style="background:#2894dd;" onclick="setPlayerColor(2, '#2894dd')"></div>
+                <div class="color-dot" style="background:#8c2e8f;" onclick="setPlayerColor(2, '#8c2e8f')"></div>
                 <div class="color-dot" style="background:#222222;" onclick="setPlayerColor(2, '#222222')"></div>
             </div>
             <p style="color:rgba(255,255,255,0.7); font-size:13px; margin-bottom:10px; margin-top:10px;">Player 1
                 (ฝั่งล่าง)</p>
             <div class="color-row">
-                <div class="color-dot" style="background:#4A90E2;" onclick="setPlayerColor(1, '#4A90E2')"></div>
-                <div class="color-dot" style="background:#50E3C2;" onclick="setPlayerColor(1, '#50E3C2')"></div>
-                <div class="color-dot" style="background:#FF647C;" onclick="setPlayerColor(1, '#FF647C')"></div>
-                <div class="color-dot" style="background:#F5A623;" onclick="setPlayerColor(1, '#F5A623')"></div>
+                <div class="color-dot" style="background:#ff0505;" onclick="setPlayerColor(1, '#ff0505')"></div>
+                <div class="color-dot" style="background:#ffe205;" onclick="setPlayerColor(1, '#ffe205')"></div>
+                <div class="color-dot" style="background:#2b9202;" onclick="setPlayerColor(1, '#2b9202')"></div>
+                <div class="color-dot" style="background:#2894dd;" onclick="setPlayerColor(1, '#2894dd')"></div>
+                <div class="color-dot" style="background:#8c2e8f;" onclick="setPlayerColor(1, '#8c2e8f')"></div>
                 <div class="color-dot" style="background:#222222;" onclick="setPlayerColor(1, '#222222')"></div>
             </div>
             <button class="close" onclick="closeModal('color-modal'); openModal('menu-modal');">Back</button>
@@ -1217,15 +1201,6 @@
     </div>
 
     <script>
-        function toggleFullScreen() {
-            if (!document.fullscreenElement) {
-                if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); }
-            } else {
-                if (document.exitFullscreen) { document.exitFullscreen(); }
-            }
-            closeModal('menu-modal');
-        }
-
         const state = {
             1: { life: 30, maxHp: 30, plus: 0, minus: 0, maxMana: 3, pTimer: null, mTimer: null },
             2: { life: 30, maxHp: 30, plus: 0, minus: 0, maxMana: 3, pTimer: null, mTimer: null }
@@ -1575,8 +1550,6 @@
 
             const p1Bg = document.getElementById("p1-bg");
             const p2Bg = document.getElementById("p2-bg");
-            p1Bg.classList.remove("flash-winner");
-            p2Bg.classList.remove("flash-winner");
             document.getElementById("p1-first-text").classList.remove("show");
             document.getElementById("p2-first-text").classList.remove("show");
 
@@ -1606,8 +1579,8 @@
             const loser = winner === 1 ? 2 : 1;
             document.getElementById("p1-bg").style.filter = "";
             document.getElementById("p2-bg").style.filter = "";
-            document.getElementById(`p${winner}-bg`).classList.add("flash-winner");
             document.getElementById(`p${winner}-first-text`).classList.add("show");
+            document.getElementById(`p${loser}-bg`).style.filter = "brightness(0.4) grayscale(0.6)";
 
             resetMana(winner);
             resetMana(loser);
@@ -1621,7 +1594,8 @@
             setTimeout(() => {
                 document.body.style.pointerEvents = "auto";
                 document.getElementById(`p${winner}-first-text`).classList.remove("show");
-            }, 3500);
+                document.getElementById(`p${loser}-bg`).style.filter = "";
+            }, 500);
         }
 
         function renderCoins() {
@@ -1633,8 +1607,8 @@
                 wrapper.className = 'coin-wrapper';
                 wrapper.innerHTML = `
                     <div class="coin" id="coin-${i}">
-                        <div class="coin-face coin-heads">HEADS</div>
-                        <div class="coin-face coin-tails">TAILS</div>
+                        <div class="coin-face coin-heads">หัว</div>
+                        <div class="coin-face coin-tails">ก้อย</div>
                     </div>
                     <div class="coin-label" id="coin-label-${i}"></div>
                 `;
@@ -1663,7 +1637,7 @@
                 });
 
                 setTimeout(() => {
-                    label.innerText = isHeads ? 'HEADS' : 'TAILS';
+                    label.innerText = isHeads ? 'หัว ' : 'ก้อย';
                     label.className = `coin-label ${isHeads ? 'label-heads' : 'label-tails'}`;
                     label.style.opacity = '1';
                     if (i === count - 1) flipBtn.disabled = false;
@@ -1676,6 +1650,7 @@
                 state[p].maxHp = 30;
                 document.getElementById(`p${p}-life`).innerText = 30;
                 document.getElementById(`p${p}-max-hp`).innerText = 30;
+                syncLowHpState(p);
             });
         }
         function restartGame() {
@@ -1686,7 +1661,6 @@
                 document.getElementById(`p${p}-stack-plus`).style.opacity = '0';
                 document.getElementById(`p${p}-stack-minus`).style.opacity = '0';
                 renderMana(p);
-                syncLowHpState(p);
             });
             resetHP();
             closeModal('menu-modal');
