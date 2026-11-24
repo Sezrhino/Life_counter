@@ -1,7 +1,7 @@
 {
   "id": "./",
   "name": "Irisdes'Life Counter",
-  "short_name": "Life Counter",
+  "short_name": "Irisdes'Life Counter",
   "description": "A simple Life Counter app for Eidolon TCG That i just want to create myself.",
   "start_url": "./",
   "scope": "./",
