@@ -1,0 +1,19 @@
+{
+  "id": "/",
+  "name": "Irisdes'Life Counter",
+  "short_name": "Life Counter",
+  "description": "A simple Life Counter app for Eidolon TCG That i just want to create myself.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#111827",
+  "icons": [
+    {
+      "src": "assets/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
