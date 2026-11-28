@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tournament Pairing & Standings Manager</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface-alt: #273549;
+            --border: #334155;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --success-bg: rgba(16, 185, 129, 0.14);
+            --warning: #f59e0b;
+            --warning-bg: rgba(245, 158, 11, 0.14);
+            --danger: #ef4444;
+            --danger-bg: rgba(239, 68, 68, 0.14);
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            padding: 24px 16px;
+        }
+
+        .container {
+            max-width: 1120px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 16px;
+        }
+
+        header h1 {
+            font-size: 1.65rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            background: var(--surface-alt);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 900px) {
+            .grid-main {
+                grid-template-columns: 1.1fr 1.25fr;
+                align-items: start;
+            }
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rules-box {
+            background: var(--surface-alt);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 0.84rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .rules-box strong {
+            color: var(--text);
+        }
+
+        label {
+            display: block;
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            padding: 12px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: vertical;
+            margin-bottom: 12px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background 0.15s, transform 0.05s, opacity 0.15s;
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background: var(--surface-alt);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #324259;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: #052e16;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            filter: brightness(1.08);
+        }
+
+        .btn-danger {
+            background: var(--danger-bg);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.35);
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: rgba(239, 68, 68, 0.25);
+        }
+
+        .preview-strip {
+            margin-top: 12px;
+            font-size: 0.86rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .preview-strip span strong {
+            color: var(--primary);
+        }
+
+        .match-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .match-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+        }
+
+        .match-header {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .match-players {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .player-pick {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            text-align: left;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .player-pick:hover:not(:disabled) {
+            border-color: var(--primary);
+            background: var(--surface-alt);
+        }
+
+        .player-pick.winner {
+            background: var(--success-bg);
+            border-color: var(--success);
+        }
+
+        .player-pick.loser {
+            background: var(--danger-bg);
+            border-color: rgba(239, 68, 68, 0.4);
+            opacity: 0.78;
+        }
+
+        .player-pick .p-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .player-pick .p-meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .vs-tag {
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .bye-card {
+            background: var(--warning-bg);
+            border: 1px solid rgba(245, 158, 11, 0.45);
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .bye-card strong {
+            color: #fcd34d;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+
+        th,
+        td {
+            padding: 10px 8px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .rank-pill {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            text-align: center;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            background: var(--surface-alt);
+        }
+
+        .rank-1 {
+            background: #eab308;
+            color: #0f172a;
+        }
+
+        .rank-2 {
+            background: #cbd5e1;
+            color: #0f172a;
+        }
+
+        .rank-3 {
+            background: #d97706;
+            color: #0f172a;
+        }
+
+        .winrate-high {
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .winrate-mid {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .winrate-low {
+            color: #fca5a5;
+            font-weight: 600;
+        }
+
+        .tiebreak-notice {
+            background: rgba(59, 130, 246, 0.12);
+            border: 1px solid rgba(59, 130, 246, 0.35);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 14px;
+            font-size: 0.83rem;
+            color: #bfdbfe;
+        }
+
+        .history-round {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+        }
+
+        .history-round h4 {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .history-item {
+            font-size: 0.85rem;
+            padding: 4px 0;
+            color: var(--text);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>Tournament Pairing & Standings</h1>
+                <p>Swiss-style round matching, W-L-B leaderboard & Opponent Match Win (OMW%) tiebreakers</p>
+            </div>
+            <div id="statusBadge" class="badge">Setup Mode</div>
+        </header>
+
+        <!-- SETUP SECTION -->
+        <section id="setupSection" class="card">
+            <div class="card-title">
+                <span>1. Configure Players</span>
+                <div class="btn-row">
+                    <button type="button" class="btn-secondary" onclick="fillSample(5)">5 Players</button>
+                    <button type="button" class="btn-secondary" onclick="fillSample(8)">8 Players</button>
+                    <button type="button" class="btn-secondary" onclick="fillSample(12)">12 Players</button>
+                </div>
+            </div>
+
+            <div class="rules-box">
+                <strong>Tournament Rules:</strong>
+                Rounds = <code>Math.ceil(Math.log2(playerCount))</code> &bull;
+                <strong>Round 1:</strong> Random pairings &bull;
+                <strong>Round 2+:</strong> Ordered High-to-Low by Leaderboard &bull;
+                <strong>Scoring:</strong> Win = <code>2</code>, Win by Defeat (Bye) = <code>1</code>, Loss =
+                <code>0</code> &bull;
+                <strong>Byes:</strong> Award <code>+1</code> score and <code>+1 B</code>, and do <strong>not</strong>
+                affect Matches Played or Winrate &bull;
+                <strong>Top Tiebreaker:</strong> Tied top players with equal W-L-B and equal OMW% or Winrate are
+                randomly re-ordered before starting.
+            </div>
+
+            <label for="playerInput">Enter Player Names (one per line or comma-separated):</label>
+            <textarea id="playerInput" placeholder="Alice&#10;Bob&#10;Charlie&#10;David&#10;Eve">Alice
+Bob
+Charlie
+David
+Eve</textarea>
+
+            <div class="btn-row">
+                <button type="button" class="btn-primary" onclick="startTournament()">Start Tournament</button>
+            </div>
+
+            <div class="preview-strip" id="setupPreview"></div>
+        </section>
+
+        <!-- ACTIVE TOURNAMENT SECTION -->
+        <section id="tournamentSection" class="grid grid-main hidden">
+            <!-- LEFT COLUMN: CURRENT ROUND -->
+            <div class="card">
+                <div class="card-title">
+                    <span id="roundHeading">Round 1</span>
+                    <span id="roundProgressBadge" class="badge">0 / 0 Decided</span>
+                </div>
+
+                <p id="roundSubtext" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">
+                    Click the winning player in each match to record the result.
+                </p>
+
+                <div id="matchesContainer" class="match-list"></div>
+
+                <div class="btn-row" style="margin-top: 18px;">
+                    <button type="button" id="simulateRoundBtn" class="btn-secondary" onclick="simulateCurrentRound()">
+                        Simulate Remaining Matches
+                    </button>
+                    <button type="button" id="nextRoundBtn" class="btn-primary" onclick="advanceRound()" disabled>
+                        Next Round &rarr;
+                    </button>
+                    <button type="button" id="simulateAllBtn" class="btn-success" onclick="simulateEntireTournament()">
+                        Simulate All Rounds
+                    </button>
+                </div>
+
+                <div id="historyContainer"></div>
+            </div>
+
+            <!-- RIGHT COLUMN: STANDINGS -->
+            <div class="card">
+                <div class="card-title">
+                    <span>Overall Leaderboard</span>
+                    <button type="button" class="btn-danger" onclick="resetTournament()">Reset</button>
+                </div>
+
+                <div class="rules-box" style="margin-bottom: 14px; font-size: 0.8rem;">
+                    <strong>Ranking Order:</strong>
+                    1. <strong>W-L-B</strong> (Points: <code>2W + 1B</code>, then Wins, then fewest Losses) &rarr;
+                    2. <strong>OMW%</strong> (Average Opponent Match Win %) &rarr;
+                    3. <strong>WR%</strong> (Opponent-scaled Winrate based only on actual matches played; Byes
+                    excluded).
+                    If top players tie with equal OMW% or WR%, they are randomly shuffled before starting.
+                </div>
+
+                <div id="tiebreakNotice" class="tiebreak-notice hidden"></div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Player</th>
+                                <th>W-L-B</th>
+                                <th>Pts</th>
+                                <th>MP</th>
+                                <th>OMW%</th>
+                                <th>WR%</th>
+                            </tr>
+                        </thead>
+                        <tbody id="standingsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const state = {
+            players: [],
+            totalRounds: 0,
+            currentRound: 0,
+            currentMatches: [],
+            history: [],
+            completed: false,
+            lastTopTieShuffleNames: []
+        };
+
+        function parsePlayerNames(raw) {
+            return raw
+                .split(/[\n,]+/)
+                .map(name => name.trim())
+                .filter(Boolean);
+        }
+
+        function calculateRoundCount(playerCount) {
+            if (playerCount <= 1) return 1;
+            return Math.ceil(Math.log2(playerCount));
+        }
+
+        function updateSetupPreview() {
+            const names = parsePlayerNames(document.getElementById("playerInput").value);
+            const count = names.length;
+            const preview = document.getElementById("setupPreview");
+
+            if (count < 2) {
+                preview.innerHTML = `<span style="color:#fca5a5;">Enter at least 2 players to start.</span>`;
+                return;
+            }
+
+            const rounds = calculateRoundCount(count);
+            const hasBye = count % 2 === 1 ? "Yes (+1 pt, no impact on MP or WR%)" : "No (Even pairing)";
+            preview.innerHTML = `
+        <span>Players: <strong>${count}</strong></span>
+        <span>Total Rounds: <strong>${rounds}</strong></span>
+        <span>Win by Defeat (Bye): <strong>${hasBye}</strong></span>
+      `;
+        }
+
+        document.getElementById("playerInput").addEventListener("input", updateSetupPreview);
+        updateSetupPreview();
+
+        function fillSample(count) {
+            const sampleNames = [
+                "Alice", "Bob", "Charlie", "David", "Eve", "Frank",
+                "Grace", "Heidi", "Ivan", "Judy", "Kevin", "Laura"
+            ];
+            const list = Array.from({ length: count }, (_, i) => sampleNames[i] || `Player ${i + 1}`);
+            document.getElementById("playerInput").value = list.join("\n");
+            updateSetupPreview();
+        }
+
+        function shuffleArray(list) {
+            const arr = [...list];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function startTournament() {
+            const names = parsePlayerNames(document.getElementById("playerInput").value);
+            if (names.length < 2) {
+                alert("Please enter at least 2 players.");
+                return;
+            }
+
+            state.players = names.map((name, idx) => ({
+                id: idx + 1,
+                name,
+                score: 0,
+                wins: 0,
+                losses: 0,
+                byeWins: 0,
+                matchesPlayed: 0,
+                matchRecords: [], // { opponentId, won }
+                omw: 0,
+                winrate: 0
+            }));
+
+            state.totalRounds = calculateRoundCount(state.players.length);
+            state.currentRound = 0;
+            state.currentMatches = [];
+            state.history = [];
+            state.completed = false;
+            state.lastTopTieShuffleNames = [];
+
+            document.getElementById("setupSection").classList.add("hidden");
+            document.getElementById("tournamentSection").classList.remove("hidden");
+
+            generateNextRound();
+        }
+
+        function resetTournament() {
+            document.getElementById("setupSection").classList.remove("hidden");
+            document.getElementById("tournamentSection").classList.add("hidden");
+            document.getElementById("statusBadge").textContent = "Setup Mode";
+            updateSetupPreview();
+        }
+
+        function generateNextRound() {
+            state.currentRound += 1;
+
+            let orderedPlayers;
+            if (state.currentRound === 1) {
+                state.lastTopTieShuffleNames = [];
+                orderedPlayers = shuffleArray(state.players);
+            } else {
+                // Randomize tied top players with equal OMW% or WR% before starting the round
+                orderedPlayers = getSortedStandings({ randomizeTopTies: true });
+            }
+
+            const matches = [];
+            const pairCount = Math.floor(orderedPlayers.length / 2);
+
+            for (let i = 0; i < pairCount; i++) {
+                const p1 = orderedPlayers[i * 2];
+                const p2 = orderedPlayers[i * 2 + 1];
+                matches.push({
+                    id: i + 1,
+                    type: "match",
+                    player1Id: p1.id,
+                    player2Id: p2.id,
+                    winnerId: null
+                });
+            }
+
+            // Odd player gets Win by Defeat (+1 score, +1 byeWins; does NOT affect matchesPlayed or winrate)
+            if (orderedPlayers.length % 2 === 1) {
+                const byePlayer = orderedPlayers[orderedPlayers.length - 1];
+                byePlayer.score += 1;
+                byePlayer.byeWins += 1;
+
+                matches.push({
+                    id: pairCount + 1,
+                    type: "bye",
+                    playerId: byePlayer.id
+                });
+            }
+
+            state.currentMatches = matches;
+            recalculateMetrics();
+            renderAll();
+        }
+
+        function getPlayerById(id) {
+            return state.players.find(p => p.id === id);
+        }
+
+        function recordMatchWinner(matchIndex, chosenWinnerId) {
+            const match = state.currentMatches[matchIndex];
+            if (!match || match.type !== "match") return;
+
+            const p1 = getPlayerById(match.player1Id);
+            const p2 = getPlayerById(match.player2Id);
+
+            if (match.winnerId !== null) {
+                if (match.winnerId === chosenWinnerId) return;
+                const prevWinner = getPlayerById(match.winnerId);
+                const prevLoser = prevWinner.id === p1.id ? p2 : p1;
+
+                prevWinner.score -= 2;
+                prevWinner.wins -= 1;
+                prevWinner.matchesPlayed -= 1;
+                prevWinner.matchRecords.pop();
+
+                prevLoser.losses -= 1;
+                prevLoser.matchesPlayed -= 1;
+                prevLoser.matchRecords.pop();
+            }
+
+            match.winnerId = chosenWinnerId;
+            const winner = getPlayerById(chosenWinnerId);
+            const loser = winner.id === p1.id ? p2 : p1;
+
+            winner.score += 2;
+            winner.wins += 1;
+            winner.matchesPlayed += 1;
+            winner.matchRecords.push({ opponentId: loser.id, won: true });
+
+            loser.score += 0;
+            loser.losses += 1;
+            loser.matchesPlayed += 1;
+            loser.matchRecords.push({ opponentId: winner.id, won: false });
+
+            recalculateMetrics();
+            renderAll();
+        }
+
+        function recalculateMetrics() {
+            const rawMatchWinPct = new Map();
+            for (const p of state.players) {
+                const pct = p.matchesPlayed > 0
+                    ? (p.wins / p.matchesPlayed) * 100
+                    : 0;
+                rawMatchWinPct.set(p.id, pct);
+            }
+
+            for (const p of state.players) {
+                if (p.matchRecords.length === 0) {
+                    p.omw = 0;
+                } else {
+                    const sumOpp = p.matchRecords.reduce(
+                        (acc, rec) => acc + (rawMatchWinPct.get(rec.opponentId) ?? 0),
+                        0
+                    );
+                    p.omw = Number((sumOpp / p.matchRecords.length).toFixed(2));
+                }
+            }
+
+            const currentWR = new Map();
+            for (const p of state.players) {
+                if (p.matchesPlayed === 0) {
+                    currentWR.set(p.id, 0);
+                } else {
+                    currentWR.set(p.id, (p.wins / p.matchesPlayed) * 100);
+                }
+            }
+
+            for (let iter = 0; iter < 15; iter++) {
+                const nextWR = new Map();
+                for (const p of state.players) {
+                    if (p.matchesPlayed === 0) {
+                        nextWR.set(p.id, 0);
+                        continue;
+                    }
+
+                    const selfWR = currentWR.get(p.id);
+                    let totalPoints = 0;
+
+                    for (const rec of p.matchRecords) {
+                        const oppWR = currentWR.get(rec.opponentId) ?? 0;
+                        if (rec.won) {
+                            const bonus = oppWR > selfWR ? 0.5 * (oppWR - selfWR) : 0;
+                            totalPoints += 100 + bonus;
+                        } else {
+                            const penalty = oppWR < selfWR ? 0.5 * (selfWR - oppWR) : 0;
+                            totalPoints += 0 - penalty;
+                        }
+                    }
+
+                    nextWR.set(p.id, totalPoints / p.matchesPlayed);
+                }
+
+                for (const [id, val] of nextWR.entries()) {
+                    currentWR.set(id, val);
+                }
+            }
+
+            for (const p of state.players) {
+                p.winrate = Number((currentWR.get(p.id) ?? 0).toFixed(2));
+            }
+        }
+
+        function hasSameWLB(a, b) {
+            return (
+                a.score === b.score &&
+                a.wins === b.wins &&
+                a.losses === b.losses &&
+                a.byeWins === b.byeWins
+            );
+        }
+
+        /**
+         * Overall Leaderboard Sorting:
+         * 1. W-L-B Record (Score, Wins, fewest Losses, Byes)
+         * 2. Opponent Match Win % (OMW%)
+         * 3. Opponent-Scaled Winrate (WR%)
+         *
+         * When `randomizeTopTies` is true (before starting a round), any top group
+         * sharing the #1 W-L-B record whose OMW% or WR% is tied is randomly shuffled.
+         */
+        function getSortedStandings({ randomizeTopTies = false } = {}) {
+            const sorted = [...state.players].sort((a, b) => {
+                if (b.score !== a.score) return b.score - a.score;
+                if (b.wins !== a.wins) return b.wins - a.wins;
+                if (a.losses !== b.losses) return a.losses - b.losses;
+                if (b.byeWins !== a.byeWins) return b.byeWins - a.byeWins;
+                if (b.omw !== a.omw) return b.omw - a.omw;
+                if (b.winrate !== a.winrate) return b.winrate - a.winrate;
+                return a.id - b.id;
+            });
+
+            if (!randomizeTopTies || sorted.length < 2) {
+                return sorted;
+            }
+
+            // Identify top-tier players sharing the highest W-L-B record
+            const topLeader = sorted[0];
+            const topTier = sorted.filter(p => hasSameWLB(p, topLeader));
+
+            if (topTier.length >= 2) {
+                const bestTop = topTier[0];
+                const tiedTopPlayers = topTier.filter(
+                    p => p.omw === bestTop.omw || p.winrate === bestTop.winrate
+                );
+
+                if (tiedTopPlayers.length >= 2) {
+                    const shuffledTop = shuffleArray(tiedTopPlayers);
+                    state.lastTopTieShuffleNames = shuffledTop.map(p => p.name);
+
+                    // Place shuffled top-tied players at the front in their new random order
+                    const tiedIds = new Set(shuffledTop.map(p => p.id));
+                    const remaining = sorted.filter(p => !tiedIds.has(p.id));
+                    return [...shuffledTop, ...remaining];
+                }
+            }
+
+            state.lastTopTieShuffleNames = [];
+            return sorted;
+        }
+
+        function simulateCurrentRound() {
+            state.currentMatches.forEach((match, idx) => {
+                if (match.type === "match" && match.winnerId === null) {
+                    const winnerId = Math.random() < 0.5 ? match.player1Id : match.player2Id;
+                    recordMatchWinner(idx, winnerId);
+                }
+            });
+        }
+
+        function advanceRound() {
+            const undecided = state.currentMatches.some(m => m.type === "match" && m.winnerId === null);
+            if (undecided) return;
+
+            state.history.push({
+                round: state.currentRound,
+                matches: state.currentMatches.map(m => {
+                    if (m.type === "bye") {
+                        return { type: "bye", playerName: getPlayerById(m.playerId).name };
+                    }
+                    const p1 = getPlayerById(m.player1Id);
+                    const p2 = getPlayerById(m.player2Id);
+                    const winner = getPlayerById(m.winnerId);
+                    return {
+                        type: "match",
+                        p1Name: p1.name,
+                        p2Name: p2.name,
+                        winnerName: winner.name
+                    };
+                })
+            });
+
+            if (state.currentRound >= state.totalRounds) {
+                state.completed = true;
+                renderAll();
+            } else {
+                generateNextRound();
+            }
+        }
+
+        function simulateEntireTournament() {
+            while (!state.completed) {
+                simulateCurrentRound();
+                advanceRound();
+            }
+        }
+
+        function renderAll() {
+            renderStatus();
+            renderMatches();
+            renderStandings();
+            renderHistory();
+        }
+
+        function renderStatus() {
+            const badge = document.getElementById("statusBadge");
+            if (state.completed) {
+                badge.textContent = `Tournament Complete (${state.totalRounds} Rounds)`;
+                badge.style.borderColor = "var(--success)";
+                badge.style.color = "var(--success)";
+            } else {
+                badge.textContent = `Round ${state.currentRound} of ${state.totalRounds}`;
+                badge.style.borderColor = "var(--primary)";
+                badge.style.color = "var(--text)";
+            }
+        }
+
+        function renderMatches() {
+            const heading = document.getElementById("roundHeading");
+            const progressBadge = document.getElementById("roundProgressBadge");
+            const subtext = document.getElementById("roundSubtext");
+            const container = document.getElementById("matchesContainer");
+            const nextBtn = document.getElementById("nextRoundBtn");
+            const simRoundBtn = document.getElementById("simulateRoundBtn");
+            const simAllBtn = document.getElementById("simulateAllBtn");
+
+            if (state.completed) {
+                const sorted = getSortedStandings();
+                const champion = sorted[0];
+                heading.textContent = "Final Results";
+                progressBadge.textContent = "Completed";
+                subtext.innerHTML = `Champion: <strong style="color:var(--success);">${escapeHtml(champion.name)}</strong> (${champion.wins}-${champion.losses}-${champion.byeWins} W-L-B &bull; ${champion.score} pts &bull; ${champion.omw.toFixed(2)}% OMW)`;
+                container.innerHTML = "";
+                nextBtn.disabled = true;
+                simRoundBtn.disabled = true;
+                simAllBtn.disabled = true;
+                return;
+            }
+
+            heading.textContent = state.currentRound === 1
+                ? `Round 1 (Random Pairings)`
+                : `Round ${state.currentRound} (Seeded by W-L-B, OMW% & WR%)`;
+
+            const regularMatches = state.currentMatches.filter(m => m.type === "match");
+            const decidedCount = regularMatches.filter(m => m.winnerId !== null).length;
+            progressBadge.textContent = `${decidedCount} / ${regularMatches.length} Decided`;
+
+            subtext.textContent = "Click the winning player in each match to record the result (+2 pts).";
+            nextBtn.textContent = state.currentRound === state.totalRounds ? "Finish Tournament" : "Next Round →";
+            nextBtn.disabled = decidedCount < regularMatches.length;
+            simRoundBtn.disabled = decidedCount === regularMatches.length;
+            simAllBtn.disabled = false;
+
+            container.innerHTML = state.currentMatches.map((match, idx) => {
+                if (match.type === "bye") {
+                    const p = getPlayerById(match.playerId);
+                    return `
+            <div class="bye-card">
+              <div>
+                <strong>${escapeHtml(p.name)}</strong> &mdash; Win by Defeat (Bye)
+              </div>
+              <span class="badge">+1 Score &bull; No MP/WR</span>
+            </div>
+          `;
+                }
+
+                const p1 = getPlayerById(match.player1Id);
+                const p2 = getPlayerById(match.player2Id);
+                const p1Class = match.winnerId === null ? "" : (match.winnerId === p1.id ? "winner" : "loser");
+                const p2Class = match.winnerId === null ? "" : (match.winnerId === p2.id ? "winner" : "loser");
+
+                return `
+          <div class="match-card">
+            <div class="match-header">
+              <span>Match #${match.id}</span>
+              <span>${match.winnerId ? "Winner Recorded" : "Select Winner"}</span>
+            </div>
+            <div class="match-players">
+              <button type="button" class="player-pick ${p1Class}" onclick="recordMatchWinner(${idx}, ${p1.id})">
+                <span class="p-name">${escapeHtml(p1.name)}</span>
+                <span class="p-meta">${p1.wins}-${p1.losses}-${p1.byeWins} &bull; OMW: ${p1.omw.toFixed(1)}%</span>
+              </button>
+              <span class="vs-tag">VS</span>
+              <button type="button" class="player-pick ${p2Class}" onclick="recordMatchWinner(${idx}, ${p2.id})">
+                <span class="p-name">${escapeHtml(p2.name)}</span>
+                <span class="p-meta">${p2.wins}-${p2.losses}-${p2.byeWins} &bull; OMW: ${p2.omw.toFixed(1)}%</span>
+              </button>
+            </div>
+          </div>
+        `;
+            }).join("");
+        }
+
+        function renderStandings() {
+            const tbody = document.getElementById("standingsBody");
+            const notice = document.getElementById("tiebreakNotice");
+            const sorted = getSortedStandings();
+
+            if (state.lastTopTieShuffleNames.length >= 2 && !state.completed) {
+                notice.classList.remove("hidden");
+                notice.innerHTML = `<strong>Top Tie Randomization:</strong> Tied top players (<strong>${state.lastTopTieShuffleNames.map(escapeHtml).join(", ")}</strong>) had equal OMW% or WR% and were randomly ordered before Round ${state.currentRound}.`;
+            } else {
+                notice.classList.add("hidden");
+                notice.innerHTML = "";
+            }
+
+            tbody.innerHTML = sorted.map((p, index) => {
+                const rank = index + 1;
+                const rankClass = rank <= 3 ? `rank-${rank}` : "";
+                const wrDisplay = p.matchesPlayed === 0 ? "—" : `${p.winrate.toFixed(2)}%`;
+                const wrClass = p.matchesPlayed === 0
+                    ? "winrate-mid"
+                    : (p.winrate >= 75 ? "winrate-high" : (p.winrate > 0 ? "winrate-mid" : "winrate-low"));
+
+                return `
+          <tr>
+            <td><span class="rank-pill ${rankClass}">${rank}</span></td>
+            <td><strong>${escapeHtml(p.name)}</strong></td>
+            <td><strong>${p.wins}-${p.losses}-${p.byeWins}</strong></td>
+            <td>${p.score}</td>
+            <td>${p.matchesPlayed}</td>
+            <td>${p.omw.toFixed(2)}%</td>
+            <td class="${wrClass}">${wrDisplay}</td>
+          </tr>
+        `;
+            }).join("");
+        }
+
+        function renderHistory() {
+            const container = document.getElementById("historyContainer");
+            if (state.history.length === 0) {
+                container.innerHTML = "";
+                return;
+            }
+
+            container.innerHTML = state.history.map(h => `
+        <div class="history-round">
+          <h4>Round ${h.round} Results</h4>
+          ${h.matches.map(m => {
+                if (m.type === "bye") {
+                    return `<div class="history-item">&bull; <strong>${escapeHtml(m.playerName)}</strong> won by defeat (+1 pt, bye excluded from MP/WR)</div>`;
+                }
+                return `<div class="history-item">&bull; <strong>${escapeHtml(m.winnerName)}</strong> defeated ${escapeHtml(m.p1Name === m.winnerName ? m.p2Name : m.p1Name)} (+2 pts)</div>`;
+            }).join("")}
+        </div>
+      `).join("");
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+    </script>
+</body>
+
+</html>
